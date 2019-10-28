@@ -6,15 +6,29 @@ import core.Enums.Constants;
 import java.io.File;
 import java.util.List;
 
+/**
+ * 文件类：描述已修改的文件
+ * 即：视频中勾选的待描述文件
+ */
 @SuppressWarnings("rawtypes")
 public class ChangedFile implements Comparable {
 	private String path;
 	private String changeType;
 	private String absolutePath;
+	/**
+	 * 文件名
+	 */
 	private String name;
+	/**
+	 * 枚举：修改的类型
+	 */
 	private TypeChange typeChange;
 	private boolean isRenamed;
 	private String renamedPath;
+	/**
+	 * 未知
+	 * TODO
+	 */
 	private List<StructureEntityVersion> modifiedMethods;
 	
 	public ChangedFile() {
@@ -26,10 +40,12 @@ public class ChangedFile implements Comparable {
 		this.path = path;
 		this.changeType = changeType;
 		this.name = new File(path).getName();
-		
+
+		// 文件名为空时的处理
 		if(null == this.name || name.equals("null")) {
 			this.name = path.substring(path.lastIndexOf(System.getProperty("file.separator")) + 1);
 		}
+		// 通过文件获取绝对路径
 		this.absolutePath = rootPath + System.getProperty("file.separator") + (new File(path).getPath());
 	}
 
@@ -44,7 +60,12 @@ public class ChangedFile implements Comparable {
 	public String getChangeType() {
 		return changeType;
 	}
-	
+
+	/**
+	 * 根据thirdPerson这个bool型参数，来给changeType赋值，单个文件就使用第三人称单数，如：adds，modifies等
+	 * @param thirdPerson
+	 * @return
+	 */
 	public String getChangeTypeToShow(boolean thirdPerson) {
 		String type = getChangeType();
 		if(!thirdPerson && changeType.equals(TypeChange.UNTRACKED_FOLDERS.toString()) || !thirdPerson && changeType.equals(TypeChange.ADDED.toString()) || !thirdPerson && changeType.equals(TypeChange.UNTRACKED.toString())) {
@@ -70,7 +91,7 @@ public class ChangedFile implements Comparable {
 
 	/**
      * Type changes supported by git
-     * 
+     * git提供的几种类型改变
      * @author Beat Fluri
      */
     public static enum TypeChange {

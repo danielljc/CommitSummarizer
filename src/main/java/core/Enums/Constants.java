@@ -1,5 +1,8 @@
 package core.Enums;
 
+/**
+ * 一些字符串常量
+ */
 public class Constants {
 
 	public static final String RENAME = "RENAME";

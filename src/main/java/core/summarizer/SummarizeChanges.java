@@ -218,12 +218,18 @@ public class SummarizeChanges {
 		});
 
 	}
-	
+
+	/**
+	 * 生成commit message的核心文件
+	 */
 	protected void composeCommitMessage() {
 		String currentPackage = Constants.EMPTY_STRING;
-		StringBuilder desc = new StringBuilder(); 
+		StringBuilder desc = new StringBuilder();
+
+		// i表示步骤
 		int i = 1;
 		int j = 1;
+		// 判断该git是否为init提交（可省略）
 		boolean isInitialCommit = Utils.isInitialCommit(git); 
 		
 		if(null == projectPath) {
@@ -233,7 +239,9 @@ public class SummarizeChanges {
 		}
 		
 		if(isInitialCommit) {
+			// 先获取所有新的模块，填入modules列表
 			getNewModules();
+			// 再描述上述新模块，完善commit message
 			describeNewModules(desc);
 		} 
 		
@@ -243,9 +251,18 @@ public class SummarizeChanges {
 			if(filtering && calculated != null && calculated.getImpactPercentaje() <= (filterFactor) ) {
 				continue;
 			}
+
+			/**
+			 * i表示步骤
+			 */
 			if(i == 1) {
 				desc.append(" This change set is mainly composed of:  \n\n");
 			}
+
+			/**
+			 * 根据package，来排序生成1. 2. 3. 等一级标题
+			 * 生成一级标题的一句话
+			 */
 			if(currentPackage.trim().equals(Constants.EMPTY_STRING)) {
 				currentPackage = identifier.getValue().getParser().getCompilationUnit().getPackage().getName().getFullyQualifiedName();
 				desc.append(i + ". Changes to package " + currentPackage + ":  \n\n");
@@ -265,6 +282,10 @@ public class SummarizeChanges {
 				j = 1;
 				i++;
 			}
+
+			/**
+			 * 每个包中的修改信息，1.1. 等二级子标题
+			 */
 			if(identifier.getValue().getScmOperation().equals(TypeChange.MODIFIED.toString())) {
 				ModificationDescriptor modificationDescriptor = new ModificationDescriptor();
 				modificationDescriptor.setDifferences(differences);
@@ -286,6 +307,8 @@ public class SummarizeChanges {
 					descTmp.append((i - 1) + "." + j + ". " + "Rename type " + identifier.getValue().getChangedFile().getRenamedPath().substring(identifier.getValue().getChangedFile().getRenamedPath().lastIndexOf("/") + 1).replace(Constants.JAVA_EXTENSION, Constants.EMPTY_STRING) + " with " + identifier.getValue().getChangedFile().getName().replace(Constants.JAVA_EXTENSION, "\n\n"));
 				}
 			}
+
+
 			if(!descTmp.toString().equals(Constants.EMPTY_STRING)) {
 				desc.append(descTmp.toString());
 				j++;
@@ -339,6 +362,10 @@ public class SummarizeChanges {
 		return this.summary;
 	}
 
+	/**
+	 * 字符串：描述新的模块
+	 * @param desc
+	 */
 	protected void describeNewModules(StringBuilder desc) {
 		if(modules != null && modules.size() == 0) {
 			return;
@@ -352,10 +379,14 @@ public class SummarizeChanges {
 			}
 		}
 		descTmp.append(Constants.NEW_LINE);
-		
+
+		// 将新模块描述的字符串，append到整个commit message中
 		desc.append(descTmp);
 	}
 
+	/**
+	 * 获取所有的新模块，更新成员变量models列表
+	 */
 	protected void getNewModules() {
 		for (StereotypeIdentifier identifier : identifiers) {
 			try {
