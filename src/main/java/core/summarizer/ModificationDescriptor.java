@@ -489,7 +489,15 @@ public class ModificationDescriptor {
 		}
 		
 	}
-	
+
+	/**
+	 * 这里是修改的关键点
+     * ChangeScribe利用的A文件是从Git仓库对象中获取的
+     * 所以这里需要手动修改为我们数据中的A文件
+	 * @param file
+	 * @param distiller
+	 * @param git
+	 */
 	private static void compareModified(ChangedFile file, FileDistiller distiller,Git git) {
 		File previousType = null;
 		File currentType = null;

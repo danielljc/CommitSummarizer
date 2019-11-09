@@ -46,6 +46,7 @@ public class ChangedFile implements Comparable {
 			this.name = path.substring(path.lastIndexOf(System.getProperty("file.separator")) + 1);
 		}
 		// 通过文件获取绝对路径
+		//绝对路径有可能可以直接赋值？
 		this.absolutePath = rootPath + System.getProperty("file.separator") + (new File(path).getPath());
 	}
 

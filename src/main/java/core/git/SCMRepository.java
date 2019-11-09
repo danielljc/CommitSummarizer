@@ -25,11 +25,13 @@ public class SCMRepository {
 		this.projectPath = projectPath;
 		
 		IResource project = null;
-		try {
-			 project = ProjectInformation.getSelectedProject();
-		} catch(NoClassDefFoundError e) {
-			System.out.println("you did not select a java project");
-		}
+//		try {
+//			//从UI界面获取选择的文件
+//			 project = ProjectInformation.getSelectedProject();
+//		} catch(NoClassDefFoundError e) {
+//			System.out.println("you did not select a java project");
+//		}
+		//此处可以考虑直接利用projectPath，而不需要他的IResource对象
 		if(project !=  null) {
 			openRepository(ProjectInformation.getSelectedProject()
 					.getProject().getLocationURI().getPath().toString());
@@ -88,7 +90,7 @@ public class SCMRepository {
 		}
 		return git.status().call();
 	}
-	
+
 	public static Set<ChangedFile> getDifferences(Status repositoryStatus, String rootPath) {
 		Set<ChangedFile> differences = new TreeSet<ChangedFile>();
 		

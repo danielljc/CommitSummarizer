@@ -51,7 +51,8 @@ public class Main {
 		
 		return isValid;
 	}
-	
+
+	//该方法可能就是更改的关键，projectPath的赋值就在此
 	private static void assignValue(String string) {
 		String [] param = string.split(Constants.EQUAL);
 		if(param[0].equals(REPOSITORY)) {
@@ -105,7 +106,7 @@ public class Main {
 
 	private static IStatus gettingRepositoryStatus() {
 		git = repo.getGit();
-		
+
 		if(git != null) {
 			Status status = null;
 			try {
@@ -117,10 +118,12 @@ public class Main {
 			} catch (final GitException e) {
 				e.printStackTrace();
 			}
-			
+
 			System.out.println("Extracting source code differences !");
+			//这一句应该就是需要的代码，考虑删掉前面部分可能带来的影响？
+			//这里的第二个参数怎么直接转化为我们的diff文件路径？
 			differences = SCMRepository.getDifferences(status,git.getRepository().getWorkTree().getAbsolutePath());
-			
+
 		} else {
 			System.err.println("Git repository not found!");
 			return org.eclipse.core.runtime.Status.CANCEL_STATUS;
@@ -135,11 +138,17 @@ public class Main {
 		}
 		try {
 			repo = new SCMRepository(projectPath);
-			
+
+			//该段代码中有用的大概就是
+			// differences = SCMRepository.getDifferences(status,git.getRepository().getWorkTree().getAbsolutePath());
 			gettingRepositoryStatus();
-			
+
+			//此段代码没有明显的作用，主要是根据获得的git对象执行一些我们不关心的操作？
 			RepositoryHistory.getRepositoryHistory(git);
-			
+
+			//核心在于如何让git=null时下面的代码依旧能根据给出的文件路径名来生成changes
+			//或者如何构造一个装载了需要的AB文件的Git对象？
+			//关键的参数有两个，一个是git中含有的File相关属性，另一个是filterFactor
 			SummarizeChanges summarizer = new SummarizeChanges(git, false, filterFactor, olderVersionId, newerVersionId);
 			summarizer.setProjectPath(projectPath);
 			if(null != differences && differences.size() > 0) {
